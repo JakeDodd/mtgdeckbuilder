@@ -1,0 +1,5 @@
+mtgdeckbuilder
+.env
+vendor/
+mtg/
+tmp/
