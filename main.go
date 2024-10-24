@@ -1,12 +1,11 @@
 package main
 
-
 import (
+	"fmt"
 	"html/template"
 	"io"
 	"log"
 	"os"
-	"fmt"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -31,18 +30,8 @@ type Message struct {
 	Message string
 }
 
-func concat(a string, b string) {
-	a = a + b
-}
-
 func main() {
 	godotenv.Load()
-	
-	c := "a"
-
-	concat(c, "b")
-
-	fmt.Println(c)
 
 	port := os.Getenv("PORT")
 	if port == "" {
