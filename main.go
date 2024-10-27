@@ -27,7 +27,7 @@ func newTemplate() *Templates {
 }
 
 type Message struct {
-	Message string
+	GreetingText string
 }
 
 func main() {
@@ -39,12 +39,14 @@ func main() {
 	}
 	port = ":" + port
 
+	//read file and write to database
+
 	// e is an Echo http server, see above import
 	// dont know much about this library
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Renderer = newTemplate()
-	var message Message = Message{Message: "Hello World"}
+	var message Message = Message{GreetingText: "Hello World"}
 
 	// Here we define a GET endpoint at /rand-card that returns index.html
 	// and passes the Message struct variable
