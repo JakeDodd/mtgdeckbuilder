@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"io"
 	"log"
@@ -26,7 +27,7 @@ func newTemplate() *Templates {
 }
 
 type Message struct {
-	Message string
+	GreetingText string
 }
 
 func main() {
@@ -37,6 +38,8 @@ func main() {
 		log.Fatal("PORT is not found in the environment")
 	}
 	port = ":" + port
+
+	//read file and write to database
 
 	// e is an Echo http server, see above import
 	// dont know much about this library
