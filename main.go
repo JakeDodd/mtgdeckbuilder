@@ -42,14 +42,21 @@ func main() {
 	// dont know much about this library
 	e := echo.New()
 	e.Use(middleware.Logger())
-	e.Renderer = newTemplate()
-	var message Message = Message{Message: "Hello World"}
 
-	// Here we define a GET endpoint at /rand-card that returns index.html
-	// and passes the Message struct variable
-	e.GET("/rand-card", func(c echo.Context) error {
-		return c.Render(200, "index", message)
-	})
+	// TODO: return to this later once database is seeded.
+	//e.GET("/rand-card", func(c echo.Context) error {
+	//	return c.Render(200, "index", message)
+	//})
+
+	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
+		Skipper:    nil,
+		Root:       "react/frontend/dist",
+		Index:      "index.html",
+		HTML5:      true,
+		Browse:     false,
+		IgnoreBase: false,
+		Filesystem: nil,
+	}))
 
 	log.Printf("Server starting on port: %v", port)
 
