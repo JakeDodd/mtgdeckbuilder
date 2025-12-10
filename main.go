@@ -1,9 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"html/template"
-	"io"
 	"log"
 	"os"
 
@@ -11,24 +8,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
-
-type Templates struct {
-	templates *template.Template
-}
-
-func (t *Templates) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-	return t.templates.ExecuteTemplate(w, name, data)
-}
-
-func newTemplate() *Templates {
-	return &Templates{
-		templates: template.Must(template.ParseGlob("views/*.html")),
-	}
-}
-
-type Message struct {
-	GreetingText string
-}
 
 func main() {
 	godotenv.Load()
@@ -47,13 +26,13 @@ func main() {
 	e.Use(middleware.Logger())
 
 	// TODO: return to this later once database is seeded.
-	//e.GET("/rand-card", func(c echo.Context) error {
-	//	return c.Render(200, "index", message)
-	//})
+	e.GET("/random-card", func(c echo.Context) error {
+		return c.String(200, "Hello")
+	})
 
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		Skipper:    nil,
-		Root:       "react/frontend/dist",
+		Root:       "react/dist",
 		Index:      "index.html",
 		HTML5:      true,
 		Browse:     false,
