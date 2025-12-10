@@ -1,16 +1,43 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
 	"log"
 	"os"
+	"strconv"
 
+	"github.com/JakeDodd/mtgdeckbuilder/service"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	_ "github.com/lib/pq"
 )
 
 func main() {
 	godotenv.Load()
+	host := os.Getenv("pg_host")
+	dbport, _ := strconv.Atoi(os.Getenv("pg_port"))
+	user := os.Getenv("pg_user")
+	password := os.Getenv("pg_password")
+	dbname := os.Getenv("pg_dbname")
+	sslmode := os.Getenv("sslmode")
+
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"password=%s dbname=%s sslmode=%s",
+		host, dbport, user, password, dbname, sslmode)
+
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	defer db.Close()
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -26,8 +53,9 @@ func main() {
 	e.Use(middleware.Logger())
 
 	// TODO: return to this later once database is seeded.
+	p, _ := database.GetRandomPrint(db)
 	e.GET("/random-card", func(c echo.Context) error {
-		return c.String(200, "Hello")
+		return c.JSON(200, p)
 	})
 
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
