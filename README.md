@@ -15,7 +15,11 @@ go install github.com/air-verse/air@latest
 ```
 4. Run the application
     1. It is configured so that both the go and react portions of the application will live reload: if any changes are made to source files, the whole app rebuilds and restarts.
+    2. On windows, I haven't figured out a way to get live reload to work for both the react app and the go app, so the batch script builds the react app, and runs the go portion with live reload.
 ```
 sh dev.sh
+
+# windows
+dev.bat
 ```
 
