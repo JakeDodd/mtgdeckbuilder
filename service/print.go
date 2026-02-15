@@ -10,6 +10,19 @@ import (
 
 var PrintNotFound = &PrintNotFoundError{"Print not found"}
 
+const RANDOM_PRINT_SQL = "SELECT * FROM prints ORDER BY RANDOM() limit 1"
+const ATTR_LIGHTS_SQL = "SELECT attraction_light FROM print_attraction_light WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5"
+const GAMES_SQL = "SELECT game FROM print_game WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5"
+const BORDER_EFFECTS_SQL = "SELECT border_effect FROM print_border_effect WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5"
+const FRAME_EFFECTS_SQL = "SELECT frame_effect FROM print_frame_effect WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5"
+const PRINT_RELATED_SQL = "SELECT related_id FROM print_related WHERE print_card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5"
+const RELATED_SQL = "SELECT * FROM related WHERE id = $1"
+const FINISH_SQL = "SELECT finish FROM print_finish WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5"
+const PROMO_SQL = "SELECT promo FROM print_promo WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5"
+const MULTIVERSE_ID_SQL = "SELECT multiverse_id FROM print_multiverse_id WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5"
+const PRINT_CARD_FACES_SQL = "SELECT card_faces_card_name FROM print_card_faces WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5"
+const CARD_FACES_SQL = "SELECT * FROM card_faces WHERE card_name = $1"
+
 type PrintNotFoundError struct {
 	Message string
 }
@@ -21,7 +34,7 @@ func (e *PrintNotFoundError) Error() string {
 func GetRandomPrint(db *sql.DB) (models.Prints, error) {
 	var print models.Prints = models.Prints{}
 
-	row := db.QueryRow("SELECT * FROM prints ORDER BY RANDOM() limit 1")
+	row := db.QueryRow(RANDOM_PRINT_SQL)
 
 	err := row.Scan(&print.CardName, &print.SetId, &print.Lang, &print.OracleId, &print.MtgoId, &print.MtgoFoilId, &print.ArenaId, &print.TcgplayerId,
 		&print.TcgplayerEtchedId, &print.ReleasedAt, &print.Oversized, &print.OracleText, &print.CollectorNumber, &print.Digital, &print.OldschoolF,
@@ -31,7 +44,7 @@ func GetRandomPrint(db *sql.DB) (models.Prints, error) {
 		&print.PreviewSource, &print.ContentWarning, &print.ScryfallUri, &print.RulingsUri, &print.GathererUri,
 		&print.HighresImage, &print.ImageStatus, &print.Foil, &print.NotFoil, &print.Promo, &print.Reprint, &print.Variation, &print.VariationOf,
 		&print.PriceUsd, &print.PriceUsdFoil, &print.PriceUsdEtched, &print.PriceEur, &print.PriceEurFoil, &print.PriceTix, &print.PrintedName,
-		&print.PrintedText, &print.PrintedTypeLine, &print.CardmarketId, &print.Watermark, &print.PngUri, &print.BoarderCropUri,
+		&print.PrintedText, &print.PrintedTypeLine, &print.FlavorText, &print.CardmarketId, &print.Watermark, &print.PngUri, &print.BoarderCropUri,
 		&print.ArtCropUri, &print.LargeUri, &print.NormalUri, &print.SmallUri)
 	card_name := print.CardName
 	set_id := print.SetId
@@ -46,92 +59,28 @@ func GetRandomPrint(db *sql.DB) (models.Prints, error) {
 		return print, fmt.Errorf("GetPrintByCardName1: %s: %v", card_name, err)
 	}
 
-	rows, err := db.Query("SELECT attraction_light FROM print_attraction_light WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5", card_name, set_id, oracle_id, lang, collector_number)
-	var attraction_lights []int
+	rows, err := db.Query(ATTR_LIGHTS_SQL, card_name, set_id, oracle_id, lang, collector_number)
+	print.AttractionLights, err = getListFromRows[int](rows, err)
 
-	if err == nil {
-		for rows.Next() {
-			var attraction_light int
-			err = rows.Scan(&attraction_light)
-			if err != nil {
-				if err == sql.ErrNoRows {
-					break
-				}
-				return print, fmt.Errorf("GetPrintByCardName2: %s: %v", card_name, err)
-			}
-			attraction_lights = append(attraction_lights, attraction_light)
-		}
-	}
-	print.AttractionLights = attraction_lights
-	if rows != nil {
-		rows.Close()
-	}
+	rows, err = db.Query(GAMES_SQL, card_name, set_id, oracle_id, lang, collector_number)
+	print.Games, err = getListFromRows[string](rows, err)
 
-	rows, err = db.Query("SELECT game FROM print_game WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5", card_name, set_id, oracle_id, lang, collector_number)
-	var games []string
+	rows, err = db.Query(BORDER_EFFECTS_SQL, card_name, set_id, oracle_id, lang, collector_number)
+	print.BorderEffects, err = getListFromRows[string](rows, err)
 
-	if err == nil {
-		for rows.Next() {
-			var game string
-			err = rows.Scan(&game)
-			if err != nil {
-				if err == sql.ErrNoRows {
-					break
-				}
-				return print, fmt.Errorf("GetPrintByCardName3: %s: %v", card_name, err)
-			}
-			games = append(games, game)
-		}
-	}
-	print.Games = games
-	if rows != nil {
-		rows.Close()
-	}
+	rows, err = db.Query(FRAME_EFFECTS_SQL, card_name, set_id, oracle_id, lang, collector_number)
+	print.FrameEffects, err = getListFromRows[string](rows, err)
 
-	rows, err = db.Query("SELECT border_effect FROM print_border_effect WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5", card_name, set_id, oracle_id, lang, collector_number)
+	rows, err = db.Query(FINISH_SQL, card_name, set_id, oracle_id, lang, collector_number)
+	print.Finishes, err = getListFromRows[string](rows, err)
 
-	var border_effects []string
+	rows, err = db.Query(PROMO_SQL, card_name, set_id, oracle_id, lang, collector_number)
+	print.PromoTypes, err = getListFromRows[string](rows, err)
 
-	if err == nil {
-		for rows.Next() {
-			var border_effect string
-			err = rows.Scan(&border_effect)
-			if err != nil {
-				if err == sql.ErrNoRows {
-					break
-				}
-				return print, fmt.Errorf("GetPrintByCardName4: %s: %v", card_name, err)
-			}
-			border_effects = append(border_effects, border_effect)
-		}
-	}
-	print.BorderEffects = border_effects
-	if rows != nil {
-		rows.Close()
-	}
+	rows, err = db.Query(MULTIVERSE_ID_SQL, card_name, set_id, oracle_id, lang, collector_number)
+	print.MultiverseIds, err = getListFromRows[int](rows, err)
 
-	rows, err = db.Query("SELECT frame_effect FROM print_frame_effect WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5", card_name, set_id, oracle_id, lang, collector_number)
-	var frame_effects []string
-
-	if err == nil {
-		for rows.Next() {
-			var frame_effect string
-			err = rows.Scan(&frame_effect)
-			if err != nil {
-				if err == sql.ErrNoRows {
-					break
-				}
-				return print, fmt.Errorf("GetPrintByCardName5: %s: %v", card_name, err)
-			}
-			frame_effects = append(frame_effects, frame_effect)
-		}
-	}
-	print.FrameEffects = frame_effects
-	if rows != nil {
-		rows.Close()
-	}
-
-	rows, err = db.Query("SELECT related_id FROM print_related WHERE print_card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5", card_name, set_id, oracle_id, lang, collector_number)
+	rows, err = db.Query(PRINT_RELATED_SQL, card_name, set_id, oracle_id, lang, collector_number)
 
 	var related_cards []models.Related
 
@@ -147,7 +96,7 @@ func GetRandomPrint(db *sql.DB) (models.Prints, error) {
 			}
 			var related models.Related
 
-			related_row := db.QueryRow("SELECT * FROM related WHERE id = $1", related_id)
+			related_row := db.QueryRow(RELATED_SQL, related_id)
 			err = related_row.Scan(&related.Object, &related.Id, &related.Component, &related.Name, &related.TypeLine, &related.Uri)
 
 			if err != nil {
@@ -165,70 +114,7 @@ func GetRandomPrint(db *sql.DB) (models.Prints, error) {
 		}
 	}
 
-	rows, err = db.Query("SELECT finish FROM print_finish WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5", card_name, set_id, oracle_id, lang, collector_number)
-	var finishs []string
-
-	if err == nil {
-		for rows.Next() {
-			var finish string
-			err = rows.Scan(&finish)
-			if err != nil {
-				if err == sql.ErrNoRows {
-					break
-				}
-				return print, fmt.Errorf("GetPrintByCardName6: %s: %v", card_name, err)
-			}
-			finishs = append(finishs, finish)
-		}
-	}
-	print.Finishes = finishs
-	if rows != nil {
-		rows.Close()
-	}
-
-	rows, err = db.Query("SELECT promo FROM print_promo WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5", card_name, set_id, oracle_id, lang, collector_number)
-	var promos []string
-
-	if err == nil {
-		for rows.Next() {
-			var promo string
-			err = rows.Scan(&promo)
-			if err != nil {
-				if err == sql.ErrNoRows {
-					break
-				}
-				return print, fmt.Errorf("GetPrintByCardName7: %s: %v", card_name, err)
-			}
-			promos = append(promos, promo)
-		}
-	}
-	print.PromoTypes = promos
-	if rows != nil {
-		rows.Close()
-	}
-
-	rows, err = db.Query("SELECT multiverse_id FROM print_multiverse_id WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5", card_name, set_id, oracle_id, lang, collector_number)
-	var multiverse_ids []int
-
-	if err == nil {
-		for rows.Next() {
-			var multiverse_id int
-			err = rows.Scan(&multiverse_id)
-			if err != nil {
-				if err == sql.ErrNoRows {
-					break
-				}
-				return print, fmt.Errorf("GetPrintByCardName8: %s: %v", card_name, err)
-			}
-			multiverse_ids = append(multiverse_ids, multiverse_id)
-		}
-	}
-	print.MultiverseIds = multiverse_ids
-	if rows != nil {
-		rows.Close()
-	}
-
-	rows, err = db.Query("SELECT card_faces_card_name FROM print_card_faces WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5", card_name, set_id, oracle_id, lang, collector_number)
+	rows, err = db.Query(PRINT_CARD_FACES_SQL, card_name, set_id, oracle_id, lang, collector_number)
 
 	var cardFaces []models.CardFaces
 
@@ -244,7 +130,7 @@ func GetRandomPrint(db *sql.DB) (models.Prints, error) {
 			}
 			var cardFace models.CardFaces
 
-			related_row := db.QueryRow("SELECT * FROM card_faces WHERE card_name = $1", cardFacesCardName)
+			related_row := db.QueryRow(CARD_FACES_SQL, cardFacesCardName)
 			err = related_row.Scan(&cardFace.Name, &cardFace.Artist, &cardFace.ArtistId, &cardFace.Cmc, &cardFace.Defense, &cardFace.FlavorText,
 				&cardFace.IllustrationId, &cardFace.PngUri, &cardFace.BoarderCropUri, &cardFace.ArtCropUri, &cardFace.LargeUri, &cardFace.NormalUri,
 				&cardFace.SmallUri, &cardFace.Layout, &cardFace.Loyalty, &cardFace.ManaCost, &cardFace.Object, &cardFace.OracleId, &cardFace.OracleText,
@@ -281,7 +167,7 @@ func GetPrint(card_name string, oracle_id string, set_id string, lang string, co
 		&print.PreviewSource, &print.ContentWarning, &print.ScryfallUri, &print.RulingsUri, &print.GathererUri,
 		&print.HighresImage, &print.ImageStatus, &print.Foil, &print.NotFoil, &print.Promo, &print.Reprint, &print.Variation, &print.VariationOf,
 		&print.PriceUsd, &print.PriceUsdFoil, &print.PriceUsdEtched, &print.PriceEur, &print.PriceEurFoil, &print.PriceTix, &print.PrintedName,
-		&print.PrintedText, &print.PrintedTypeLine, &print.CardmarketId, &print.Watermark, &print.PngUri, &print.BoarderCropUri,
+		&print.PrintedText, &print.PrintedTypeLine, &print.FlavorText, &print.CardmarketId, &print.Watermark, &print.PngUri, &print.BoarderCropUri,
 		&print.ArtCropUri, &print.LargeUri, &print.NormalUri, &print.SmallUri)
 
 	if err != nil {
@@ -519,14 +405,14 @@ func SavePrint(print models.Prints, db *sql.DB) error {
 		"tcg_decks_uri, edhrec_uri, tcg_buy_uri, cardmarket_buy_uri, cardhoarder_buy_uri, oracle_id, card_name, prints_search_uri, flavor_name, security_stamp, previewed_at, previewed_source_uri,"+
 		"preview_source, content_warning, scryfall_uri, rulings_uri, gatherer_uri, highres_image, image_status, foil, not_foil, promo, reprint, variation,"+
 		"variation_of, price_usd, price_usd_foil, price_usd_etched, price_eur, price_eur_foil, price_tix, printed_name, printed_next, printed_type_line, cardmarket_id,"+
-		"watermark, png_uri, boarder_crop_uri, art_crop_uri, large_uri, normal_uri, small_uri) "+
-		"VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34,$35,$36,$37,$38,$39,$40,$41,$42,$43,$44,$45,$46,$47,$48,$49,$50,$51,$52,$53,$54,$55,$56,$57,$58,$59,$60,$61,$62,$63,$64,$65,$66)",
+		"watermark, png_uri, boarder_crop_uri, art_crop_uri, large_uri, normal_uri, small_uri, flavor_text) "+
+		"VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34,$35,$36,$37,$38,$39,$40,$41,$42,$43,$44,$45,$46,$47,$48,$49,$50,$51,$52,$53,$54,$55,$56,$57,$58,$59,$60,$61,$62,$63,$64,$65,$66,$67)",
 		print.Lang, print.MtgoId, print.MtgoFoilId, print.ArenaId, print.TcgplayerId, print.TcgplayerEtchedId, print.ReleasedAt, print.Oversized, print.SetId, print.OracleText,
 		print.CollectorNumber, print.Digital, print.Rarity, print.OldschoolF, print.CardBackId, print.Artist, print.IllustrationId, print.BorderColor, print.Frame, print.FullArt, print.Textless, print.Booster,
 		print.StorySpotlight, print.TcgArticlesUri, print.TcgDecksUri, print.EdhrecUri, print.TcgBuyUri, print.CardmarketBuyUri, print.CardhoarderBuyUri, print.OracleId, print.CardName,
 		print.PrintsSearchUri, print.FlavorName, print.SecurityStamp, print.PreviewedAt, print.PreviewUri, print.PreviewSource, print.ContentWarning, print.ScryfallUri, print.RulingsUri, print.GathererUri,
 		print.HighresImage, print.ImageStatus, print.Foil, print.NotFoil, print.Promo, print.Reprint, print.Variation, print.VariationOf, print.PriceUsd, print.PriceUsdFoil, print.PriceUsdEtched, print.PriceEur,
-		print.PriceEurFoil, print.PriceTix, print.PrintedName, print.PrintedText, print.PrintedTypeLine, print.CardmarketId, print.Watermark, print.PngUri, print.BoarderCropUri, print.ArtCropUri, print.LargeUri, print.NormalUri, print.SmallUri)
+		print.PriceEurFoil, print.PriceTix, print.PrintedName, print.PrintedText, print.PrintedTypeLine, print.CardmarketId, print.Watermark, print.PngUri, print.BoarderCropUri, print.ArtCropUri, print.LargeUri, print.NormalUri, print.SmallUri, print.FlavorText)
 
 	if err != nil {
 		return err
@@ -629,4 +515,25 @@ func SavePrint(print models.Prints, db *sql.DB) error {
 	}
 
 	return nil
+}
+
+func getListFromRows[K string | int](rows *sql.Rows, err error) ([]K, error) {
+	var arr []K
+	if err == nil {
+		for rows.Next() {
+			var v K
+			err = rows.Scan(&v)
+			if err != nil {
+				if err == sql.ErrNoRows {
+					break
+				}
+				return arr, fmt.Errorf("GetListFromRows: %v", err)
+			}
+			arr = append(arr, v)
+		}
+	}
+	if rows != nil {
+		rows.Close()
+	}
+	return arr, nil
 }

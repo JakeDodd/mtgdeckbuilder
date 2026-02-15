@@ -1,0 +1,46 @@
+package models
+
+type Cards struct {
+	OracleId         string
+	Object           string
+	CardName         string
+	Layout           string
+	ManaCost         string
+	Cmc              float64
+	TypeLine         string
+	Power            string
+	Toughness        string
+	Colors           []string
+	ColorIdentity    []string
+	Keywords         []string
+	ProducedMana     []string
+	Reserved         bool
+	StandardF        bool
+	FutureF          bool
+	HistoricF        bool
+	TimelessF        bool
+	GladiatorF       bool
+	PioneerF         bool
+	ExplorerF        bool
+	ModernF          bool
+	LegacyF          bool
+	PauperF          bool
+	VintageF         bool
+	PennyF           bool
+	CommanderF       bool
+	OathbreakerF     bool
+	StandardbrawlF   bool
+	BrawlF           bool
+	AlchemyF         bool
+	PaupercommanderF bool
+	DuelF            bool
+	PremodernF       bool
+	PredhF           bool
+	ColorIndicator   []string
+	Defense          string
+	Loyalty          string
+	EdhrecRank       int
+	HandModifier     string
+	LifeModifier     string
+	PennyRank        int
+}

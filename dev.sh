@@ -3,5 +3,5 @@
 if [[ ! -f .air.toml ]]; then
 	air init
 fi
-
-cd react && npm run dev & air && fg
+cd react && npm install --quiet
+npm run dev & cd ../ && air && fg
