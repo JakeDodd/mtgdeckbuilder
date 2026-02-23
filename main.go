@@ -52,12 +52,11 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 
-	// TODO: return to this later once database is seeded.
-	p, err := database.GetRandomPrint(db)
-	if err != nil {
-		log.Fatal(err)
-	}
 	e.GET("/random-card", func(c echo.Context) error {
+		p, err := database.GetRandomPrint(db)
+		if err != nil {
+			log.Fatal(err)
+		}
 		return c.JSON(200, p)
 	})
 
