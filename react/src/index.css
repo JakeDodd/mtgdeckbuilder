@@ -23,8 +23,20 @@ html, body {
 }
 
 /* Ensure the main React app container (usually an ID or class like 'root' or 'App') also takes full height */
-#root, .App { 
-  min-height: 100vh; /* Use vh to guarantee full viewport height */
+#root { 
   box-sizing: border-box;
+  background-color: #f0f0f0; /* Choose a base color */
+  background-image: url('assets/card-back4.png'); /* Link to your image file */
+  background-size: cover;
+  background-repeat: repeat;
+
+  min-height: 100vh;
+  box-sizing: border-box;
+  /* Add your border style here */
+  border: 10px solid black; /* Example: 10px solid coral border */
+  border-radius: 5px;
+  padding: .5%;
 }
+
+
 

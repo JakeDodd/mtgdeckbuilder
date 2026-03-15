@@ -1,12 +1,52 @@
-#root {
-  background-color: #f0f0f0; /* Choose a base color */
-  background-image: url('assets/mtg-cardback-color.png'); /* Link to your image file */
-  background-repeat: repeat;
-
-  min-height: 100vh;
-  box-sizing: border-box;
-  /* Add your border style here */
-  border: 10px solid black; /* Example: 10px solid coral border */
-  border-radius: 5px;
+.button-container {
+	padding: 2%;
+}
+.random-button {
+	background-color: #69707a;
+	border: outset 6px #757e8a;
+	box-shadow: 5px 5px 20px black;
+	padding: 1rem 1rem;
+	font-size: 1.5rem;
+	font-family: "Goudy Mediaeval";
 }
 
+.card-box {
+	padding: 1%;
+	display: flex;
+	flex-direction:column;
+	justify-content:center;
+}
+.card-name {
+	font-family: "Goudy Mediaeval";
+	font-size: 2.5rem;
+	text-decoration: underline;
+	color: black;
+	margin: 0;
+}
+
+.card-img {
+	border: 0.5rem ;
+	border-radius: 5%;
+	margin: auto;
+}
+
+.border-style {
+	border: outset 6px rgba(0, 0, 0, .3);
+	padding: .5%;
+	height: 100vh;
+}
+
+.container {
+	/*display: flex;
+	justify-content:center;
+	align-items: top;
+	flex-direction:column;*/
+	border: groove 6px rgba(0, 0, 0, .3);
+	height: 99vh;
+}
+
+@media (hover: hover) {
+	.random-button:hover {
+		transform: scale(1.2);
+	}
+}

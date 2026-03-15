@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/JakeDodd/mtgdeckbuilder/models"
 	"github.com/JakeDodd/mtgdeckbuilder/service"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -53,11 +54,22 @@ func main() {
 	e.Use(middleware.Logger())
 
 	e.GET("/random-card", func(c echo.Context) error {
-		p, err := database.GetRandomPrint(db)
+		card, err := database.GetRandomCard(db)
 		if err != nil {
 			log.Fatal(err)
 		}
-		return c.JSON(200, p)
+		prints, err := database.GetPrintsByName(db, card.CardName)
+		if err != nil {
+			log.Fatal(err)
+		}
+		var english_print models.Prints
+		for i := 0; i < len(prints); i++ {
+			if prints[i].Lang == "en" {
+				english_print = prints[i]
+				return c.JSON(200, english_print)
+			}
+		}
+		return c.JSON(200, prints[0])
 	})
 
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
