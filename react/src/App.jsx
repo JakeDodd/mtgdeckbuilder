@@ -7,7 +7,15 @@ function App() {
 
   const getCard = async () => {
     const response = await axios.get("http://localhost:8000/random-card")
+    console.log(response.data)
     setCard(response.data)
+  }
+
+  const getNormalUri = () => {
+    if (card.CardFaces != null) {
+      return card.CardFaces.NormalUri
+    }
+    return card.NormalUri
   }
 
   return (
@@ -22,7 +30,7 @@ function App() {
           <p className="card-name">
             {card.CardName}
           </p>
-          <img className="card-img" src={card.NormalUri} />
+          <img className="card-img" src={getNormalUri()} />
         </div>
 
       </div>

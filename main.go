@@ -62,14 +62,18 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		var english_print models.Prints
+		var english_prints []models.Prints
 		for i := 0; i < len(prints); i++ {
 			if prints[i].Lang == "en" {
-				english_print = prints[i]
-				return c.JSON(200, english_print)
+				english_prints = append(english_prints, prints[i])
 			}
 		}
-		return c.JSON(200, prints[0])
+		for i := 0; i < len(english_prints); i++ {
+			if english_prints[i].HighresImage {
+				return c.JSON(200, english_prints[i])
+			}
+		}
+		return c.JSON(200, english_prints[0])
 	})
 
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
