@@ -1,14 +1,4 @@
-.button-container {
-	padding: 2%;
-}
-.random-button {
-	background-color: #69707a;
-	border: outset 6px #757e8a;
-	box-shadow: 5px 5px 20px black;
-	padding: 1rem 1rem;
-	font-size: 1.5rem;
-	font-family: "Goudy Mediaeval";
-}
+
 
 .card-box {
 	padding: 1%;
@@ -25,9 +15,9 @@
 }
 
 .card-img {
-	border: 0.5rem ;
-	border-radius: 5%;
 	margin: auto;
+	border: solid 0.5rem rgba(0, 0, 0, 0);
+	border-radius: 5%;
 }
 
 .border-style {
@@ -45,6 +35,42 @@
 	height: 99vh;
 }
 
+/*
+.image-container {
+	perspective: 1000px;
+	width: 30%;
+	aspect-ratio: 16 / 9;
+	margin: 0 auto;
+}
+
+
+.image-container-inner {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	transition: transform 0.8s;
+	transform-style: preserve-3d;
+}
+
+.image-container:hover .image-container-inner {
+	transform: rotateY(180deg);
+}
+
+.image-front .image-back {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+}
+
+.image-front {
+
+}
+.image-back {
+	transform: rotateY(180deg);
+}
+*/
 @media (hover: hover) {
 	.random-button:hover {
 		transform: scale(1.2);
