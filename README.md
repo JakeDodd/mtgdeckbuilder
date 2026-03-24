@@ -8,6 +8,7 @@ pg_port=5432
 pg_user=<FILL>
 pg_password=<FILL>
 pg_dbname=<FILL>
+sslmode=disabled
 ```
 3. Install Air
 ```
@@ -16,6 +17,7 @@ go install github.com/air-verse/air@latest
 4. Run the application
     1. It is configured so that both the go and react portions of the application will live reload: if any changes are made to source files, the whole app rebuilds and restarts.
     2. On windows, I haven't figured out a way to get live reload to work for both the react app and the go app, so the batch script builds the react app, and runs the go portion with live reload.
+        1. This is easy to circumvent by installing git bash (or any terminal emulator with bash) on windows and using the sh script
 ```
 sh dev.sh
 
