@@ -1,78 +1,20 @@
-
-
-.card-box {
-	padding: 1%;
-	display: flex;
-	flex-direction:column;
-	justify-content:center;
-}
-.card-name {
-	font-family: "Goudy Mediaeval";
-	font-size: 2.5rem;
-	text-decoration: underline;
-	color: black;
-	margin: 0;
-}
-
-.card-img {
-	margin: auto;
-	border: solid 0.5rem rgba(0, 0, 0, 0);
-	border-radius: 5%;
-}
-
 .border-style {
-	border: outset 6px rgba(0, 0, 0, .3);
-	padding: .5%;
-	height: 100vh;
+  border: outset 6px rgba(0, 0, 0, 0.3);
+  padding: 0.5%;
+  height: 100vh;
 }
 
 .container {
-	/*display: flex;
+  /*display: flex;
 	justify-content:center;
 	align-items: top;
 	flex-direction:column;*/
-	border: groove 6px rgba(0, 0, 0, .3);
-	height: 99vh;
+  border: groove 6px rgba(0, 0, 0, 0.3);
+  height: 99vh;
 }
 
-/*
-.image-container {
-	perspective: 1000px;
-	width: 30%;
-	aspect-ratio: 16 / 9;
-	margin: 0 auto;
-}
-
-
-.image-container-inner {
-	position: relative;
-	width: 100%;
-	height: 100%;
-	transition: transform 0.8s;
-	transform-style: preserve-3d;
-}
-
-.image-container:hover .image-container-inner {
-	transform: rotateY(180deg);
-}
-
-.image-front .image-back {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	-webkit-backface-visibility: hidden;
-	backface-visibility: hidden;
-}
-
-.image-front {
-
-}
-.image-back {
-	transform: rotateY(180deg);
-}
-*/
 @media (hover: hover) {
-	.random-button:hover {
-		transform: scale(1.2);
-	}
+  .random-button:hover {
+    transform: scale(1.2);
+  }
 }

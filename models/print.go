@@ -120,4 +120,6 @@ type Prints struct {
 	SmallUri          string
 	Watermark         string
 	PurchaseUris      []string
+	Card              Cards
+	Set               MtgSet
 }

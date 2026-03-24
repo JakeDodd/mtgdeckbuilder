@@ -1,0 +1,72 @@
+.card-box {
+  padding: 1%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.card-name {
+  font-family: "Goudy Mediaeval";
+  font-size: 2.5rem;
+  text-decoration: underline;
+  color: black;
+  margin: 0;
+}
+
+.image-container {
+  perspective: 1000px;
+  max-width: 400px;
+  width: 400px;
+  height: 558px;
+  aspect-ratio: 5 / 7;
+}
+
+.image-container-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.image-container:hover .image-container-inner {
+  transform: rotateY(180deg);
+}
+
+.image-front,
+.image-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 4%;
+}
+
+.image-front {
+}
+.image-back {
+  transform: rotateY(180deg);
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4%;
+}
+.card-artist,
+.card-price-usd {
+  align-items: center;
+  font-family: "Goudy Mediaeval";
+  font-size: 1.5rem;
+  color: black;
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.grid-item {
+  padding: 10px;
+}

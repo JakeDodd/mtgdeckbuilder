@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/JakeDodd/mtgdeckbuilder/models"
-	"github.com/JakeDodd/mtgdeckbuilder/service"
+	database "github.com/JakeDodd/mtgdeckbuilder/service"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -68,12 +68,17 @@ func main() {
 				english_prints = append(english_prints, prints[i])
 			}
 		}
+		var print *models.Prints
 		for i := 0; i < len(english_prints); i++ {
 			if english_prints[i].HighresImage {
-				return c.JSON(200, english_prints[i])
+				print = &english_prints[i]
 			}
 		}
-		return c.JSON(200, english_prints[0])
+		if print == nil {
+			print = &english_prints[0]
+		}
+		print.Card = card
+		return c.JSON(200, print)
 	})
 
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
