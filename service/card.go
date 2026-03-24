@@ -26,6 +26,31 @@ const COLOR_IDENTITIES_BY_CARD_SQL = "SELECT color FROM card_color_identity WHER
 const PRODUCED_MANA_BY_CARD_SQL = "SELECT color FROM card_produced_mana WHERE oracle_id = $1 and card_name = $2"
 const COLOR_INDICATOR_BY_CARD_SQL = "SELECT color FROM card_color_indicator WHERE oracle_id = $1 and card_name = $2"
 const KEYWORDS_BY_CARD_SQL = "SELECT keyword FROM card_keyword WHERE oracle_id = $1 and card_name = $2"
+const CARD_BY_NAME = "SELECT * FROM cards WHERE card_name ilike $1"
+
+func GetCardByNameFuzzy(db *sql.DB, name string) ([]models.Cards, error) {
+	var cards [] models.Cards
+
+	name = "%"+name+"%"
+	rows, err := db.Query(CARD_BY_NAME, name)
+	
+	if err != nil {
+		return cards, fmt.Errorf("GetCardByNameFuzzy: %s: %v", name, err)
+	}
+	for rows.Next() {
+		var card models.Cards
+		err := rows.Scan(&card.OracleId, &card.Object, &card.CardName, &card.Layout, &card.ManaCost, &card.Cmc, &card.TypeLine, &card.Power, &card.Toughness, &card.Reserved, &card.StandardF, &card.FutureF, &card.HistoricF, &card.TimelessF, &card.GladiatorF, &card.PioneerF, &card.ExplorerF, &card.ModernF, &card.LegacyF, &card.PauperF, &card.VintageF, &card.PennyF, &card.CommanderF, &card.OathbreakerF, &card.StandardbrawlF, &card.BrawlF, &card.AlchemyF, &card.PaupercommanderF, &card.DuelF, &card.PremodernF, &card.PredhF, &card.Defense, &card.Loyalty, &card.EdhrecRank, &card.HandModifier, &card.LifeModifier)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				break
+			}
+			return cards, fmt.Errorf("GetListFromRows: %v", err)
+		}
+		GetSecondaryCardInfo(&card, db)
+		cards = append(cards, card)
+	}
+	return cards, nil
+}
 
 func GetRandomCard(db *sql.DB) (models.Cards, error) {
 	var card models.Cards = models.Cards{}
@@ -33,29 +58,13 @@ func GetRandomCard(db *sql.DB) (models.Cards, error) {
 
 	err := row.Scan(&card.OracleId, &card.Object, &card.CardName, &card.Layout, &card.ManaCost, &card.Cmc, &card.TypeLine, &card.Power, &card.Toughness, &card.Reserved, &card.StandardF, &card.FutureF, &card.HistoricF, &card.TimelessF, &card.GladiatorF, &card.PioneerF, &card.ExplorerF, &card.ModernF, &card.LegacyF, &card.PauperF, &card.VintageF, &card.PennyF, &card.CommanderF, &card.OathbreakerF, &card.StandardbrawlF, &card.BrawlF, &card.AlchemyF, &card.PaupercommanderF, &card.DuelF, &card.PremodernF, &card.PredhF, &card.Defense, &card.Loyalty, &card.EdhrecRank, &card.HandModifier, &card.LifeModifier)
 
-	oracleId := card.OracleId
-	name := card.CardName
-
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return card, CardNotFound
 		}
-		return card, fmt.Errorf("GetCardByoracleId: %s: %v", oracleId, err)
+		return card, fmt.Errorf("GetCardByoracleId: %s: %v", card.OracleId, err)
 	}
-	rows, err := db.Query(COLORS_BY_CARD_SQL, oracleId, name)
-	card.Colors, err = GetListFromRows[string](rows, err)
-
-	rows, err = db.Query(COLOR_IDENTITIES_BY_CARD_SQL, oracleId, name)
-	card.ColorIdentity, err = GetListFromRows[string](rows, err)
-
-	rows, err = db.Query(PRODUCED_MANA_BY_CARD_SQL, oracleId, name)
-	card.ProducedMana, err = GetListFromRows[string](rows, err)
-
-	rows, err = db.Query(COLOR_INDICATOR_BY_CARD_SQL, oracleId, name)
-	card.ColorIndicator, err = GetListFromRows[string](rows, err)
-
-	rows, err = db.Query(KEYWORDS_BY_CARD_SQL, oracleId, name)
-	card.Keywords, err = GetListFromRows[string](rows, err)
+	GetSecondaryCardInfo(&card, db)
 
 	return card, nil
 
@@ -190,4 +199,20 @@ func SaveCard(card models.Cards, db *sql.DB) error {
 		}
 	*/
 	return nil
+}
+func GetSecondaryCardInfo (card *models.Cards, db *sql.DB) {
+	rows, err := db.Query(COLORS_BY_CARD_SQL, card.OracleId, card.CardName)
+	card.Colors, err = GetListFromRows[string](rows, err)
+
+	rows, err = db.Query(COLOR_IDENTITIES_BY_CARD_SQL, card.OracleId, card.CardName)
+	card.ColorIdentity, err = GetListFromRows[string](rows, err)
+
+	rows, err = db.Query(PRODUCED_MANA_BY_CARD_SQL, card.OracleId, card.CardName)
+	card.ProducedMana, err = GetListFromRows[string](rows, err)
+
+	rows, err = db.Query(COLOR_INDICATOR_BY_CARD_SQL, card.OracleId, card.CardName)
+	card.ColorIndicator, err = GetListFromRows[string](rows, err)
+
+	rows, err = db.Query(KEYWORDS_BY_CARD_SQL, card.OracleId, card.CardName)
+	card.Keywords, err = GetListFromRows[string](rows, err)
 }

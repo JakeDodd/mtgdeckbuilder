@@ -52,7 +52,14 @@ func main() {
 	// dont know much about this library
 	e := echo.New()
 	e.Use(middleware.Logger())
-
+	e.GET("/card-search", func (c echo.Context) error {
+		name := c.QueryParam("name")
+		cards, err := database.GetCardByNameFuzzy(db, name)
+		if err != nil {
+			log.Fatal(err)
+		}
+ 		return c.JSON(200, cards)
+	})
 	e.GET("/random-card", func(c echo.Context) error {
 		card, err := database.GetRandomCard(db)
 		if err != nil {

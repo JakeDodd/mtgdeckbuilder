@@ -1,0 +1,20 @@
+.border-style {
+  border: outset 6px rgba(0, 0, 0, 0.3);
+  padding: 0.5%;
+  height: 100vh;
+}
+
+.container {
+  /*display: flex;
+	justify-content:center;
+	align-items: top;
+	flex-direction:column;*/
+  border: groove 6px rgba(0, 0, 0, 0.3);
+  height: 99vh;
+}
+
+@media (hover: hover) {
+  .random-button:hover {
+    transform: scale(1.2);
+  }
+}

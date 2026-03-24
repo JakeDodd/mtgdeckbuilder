@@ -2,6 +2,8 @@ import { useState } from "react";
 import "./App.css";
 import Button from "./components/Button.jsx";
 import CardDetail from "./components/CardDetail.jsx";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import RandomCardPage from "./components/RandomCardPage.jsx";
 
 function App() {
   const [card, setCard] = useState({});
@@ -19,16 +21,15 @@ function App() {
   };
 
   return (
-    <div className="border-style">
-      <div className="container">
-        <Button onClick={getCard} />
-        <CardDetail
-          card={card}
-          imageUrl={imageUrl}
-          backImageUrl={backImageUrl}
-        />
+    <BrowserRouter>
+      <div className="border-style">
+        <div className="container">
+          <Routes>
+            <Route path="/random" element={<RandomCardPage />} />
+          </Routes>
+        </div>
       </div>
-    </div>
+    </BrowserRouter>
   );
 }
 
