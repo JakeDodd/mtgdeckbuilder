@@ -43,4 +43,5 @@ type Cards struct {
 	HandModifier     string
 	LifeModifier     string
 	PennyRank        int
+	Prints           []Prints
 }

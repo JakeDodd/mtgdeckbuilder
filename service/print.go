@@ -11,6 +11,7 @@ import (
 var PrintNotFound = &PrintNotFoundError{"Print not found"}
 
 const PRINTS_BY_NAME_SQL = "SELECT * FROM prints where card_name = $1"
+const PRINTS_BY_NAME_AND_ORACLEID_SQL = "SELECT * FROM prints where card_name = $1 and oracle_id = $2"
 const ATTR_LIGHTS_SQL = "SELECT attraction_light FROM print_attraction_light WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5"
 const GAMES_SQL = "SELECT game FROM print_game WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5"
 const BORDER_EFFECTS_SQL = "SELECT border_effect FROM print_border_effect WHERE card_name = $1 and set_id = $2 and oracle_id = $3 and lang = $4 and collector_number = $5"
@@ -31,6 +32,21 @@ func (e *PrintNotFoundError) Error() string {
 	return fmt.Sprintf("Error: %s", e.Message)
 }
 
+func GetPrintsByNameAndOracleId(db *sql.DB, name string, oracleId string) ([]models.Prints, error) {
+	var prints []models.Prints = []models.Prints{}
+
+	rows, err := db.Query(PRINTS_BY_NAME_AND_ORACLEID_SQL, name, oracleId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return prints, PrintNotFound
+		}
+		return prints, fmt.Errorf("GetPrintByCardName: Print table query: %s: %v", name, err)
+	}
+	prints, err = mapPrints(db, rows)
+
+	return prints, nil
+}
+
 func GetPrintsByName(db *sql.DB, name string) ([]models.Prints, error) {
 	var prints []models.Prints = []models.Prints{}
 
@@ -41,6 +57,13 @@ func GetPrintsByName(db *sql.DB, name string) ([]models.Prints, error) {
 		}
 		return prints, fmt.Errorf("GetPrintByCardName: Print table query: %s: %v", name, err)
 	}
+	prints, err = mapPrints(db, rows)
+
+	return prints, nil
+}
+
+func mapPrints(db *sql.DB, rows *sql.Rows) ([]models.Prints, error) {
+	var prints []models.Prints = []models.Prints{}
 	for rows.Next() {
 		var print models.Prints = models.Prints{}
 		err := rows.Scan(&print.CardName, &print.SetId, &print.Lang, &print.OracleId, &print.MtgoId, &print.MtgoFoilId, &print.ArenaId, &print.TcgplayerId,
@@ -63,8 +86,9 @@ func GetPrintsByName(db *sql.DB, name string) ([]models.Prints, error) {
 			if err == sql.ErrNoRows {
 				return prints, PrintNotFound
 			}
-			return prints, fmt.Errorf("GetPrintByCardName1: %s: %v", name, err)
+			return prints, fmt.Errorf("MapPrints: %s: %v", card_name, err)
 		}
+		print.Set, err = GetSetById(db, set_id)
 
 		rows, err := db.Query(ATTR_LIGHTS_SQL, card_name, set_id, oracle_id, lang, collector_number)
 		print.AttractionLights, err = GetListFromRows[int](rows, err)
@@ -99,7 +123,7 @@ func GetPrintsByName(db *sql.DB, name string) ([]models.Prints, error) {
 					if err == sql.ErrNoRows {
 						break
 					}
-					return prints, fmt.Errorf("GetPrintByCardNameAndSetId: %s: %s: %v", card_name, set_id, err)
+					return prints, fmt.Errorf("MapPrints: %s: %s: %v", card_name, set_id, err)
 				}
 				var related models.Related
 
@@ -110,7 +134,7 @@ func GetPrintsByName(db *sql.DB, name string) ([]models.Prints, error) {
 					if err == sql.ErrNoRows {
 						break
 					}
-					return prints, fmt.Errorf("GetPrintByCardNameAndSetId: %s: %s: %v", card_name, set_id, err)
+					return prints, fmt.Errorf("MapPrints: %s: %s: %v", card_name, set_id, err)
 
 				}
 				related_cards = append(related_cards, related)
@@ -133,7 +157,7 @@ func GetPrintsByName(db *sql.DB, name string) ([]models.Prints, error) {
 					if err == sql.ErrNoRows {
 						break
 					}
-					return prints, fmt.Errorf("GetPrintByCardNameAndSetId: %s: %s: %v", card_name, set_id, err)
+					return prints, fmt.Errorf("MapPrints: %s: %s: %v", card_name, set_id, err)
 				}
 				var cardFace models.CardFaces
 
@@ -147,7 +171,7 @@ func GetPrintsByName(db *sql.DB, name string) ([]models.Prints, error) {
 					if err == sql.ErrNoRows {
 						break
 					}
-					return prints, fmt.Errorf("GetPrintByCardNameAndSetId: %s: %s: %v", card_name, set_id, err)
+					return prints, fmt.Errorf("MapPrints: %s: %s: %v", card_name, set_id, err)
 
 				}
 				cardFaces = append(cardFaces, cardFace)

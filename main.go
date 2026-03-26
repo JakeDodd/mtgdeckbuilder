@@ -7,7 +7,6 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/JakeDodd/mtgdeckbuilder/models"
 	database "github.com/JakeDodd/mtgdeckbuilder/service"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -52,40 +51,20 @@ func main() {
 	// dont know much about this library
 	e := echo.New()
 	e.Use(middleware.Logger())
-	e.GET("/card-search", func (c echo.Context) error {
+	e.GET("/card-search", func(c echo.Context) error {
 		name := c.QueryParam("name")
 		cards, err := database.GetCardByNameFuzzy(db, name)
 		if err != nil {
 			log.Fatal(err)
 		}
- 		return c.JSON(200, cards)
+		return c.JSON(200, cards)
 	})
 	e.GET("/random-card", func(c echo.Context) error {
 		card, err := database.GetRandomCard(db)
 		if err != nil {
 			log.Fatal(err)
 		}
-		prints, err := database.GetPrintsByName(db, card.CardName)
-		if err != nil {
-			log.Fatal(err)
-		}
-		var english_prints []models.Prints
-		for i := 0; i < len(prints); i++ {
-			if prints[i].Lang == "en" {
-				english_prints = append(english_prints, prints[i])
-			}
-		}
-		var print *models.Prints
-		for i := 0; i < len(english_prints); i++ {
-			if english_prints[i].HighresImage {
-				print = &english_prints[i]
-			}
-		}
-		if print == nil {
-			print = &english_prints[0]
-		}
-		print.Card = card
-		return c.JSON(200, print)
+		return c.JSON(200, card)
 	})
 
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
