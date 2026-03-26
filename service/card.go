@@ -29,11 +29,11 @@ const KEYWORDS_BY_CARD_SQL = "SELECT keyword FROM card_keyword WHERE oracle_id =
 const CARD_BY_NAME = "SELECT * FROM cards WHERE card_name ilike $1"
 
 func GetCardByNameFuzzy(db *sql.DB, name string) ([]models.Cards, error) {
-	var cards [] models.Cards
+	var cards []models.Cards
 
-	name = "%"+name+"%"
+	name = "%" + name + "%"
 	rows, err := db.Query(CARD_BY_NAME, name)
-	
+
 	if err != nil {
 		return cards, fmt.Errorf("GetCardByNameFuzzy: %s: %v", name, err)
 	}
@@ -47,6 +47,7 @@ func GetCardByNameFuzzy(db *sql.DB, name string) ([]models.Cards, error) {
 			return cards, fmt.Errorf("GetListFromRows: %v", err)
 		}
 		GetSecondaryCardInfo(&card, db)
+		card.Prints, err = GetPrintsByNameAndOracleId(db, card.CardName, card.OracleId)
 		cards = append(cards, card)
 	}
 	return cards, nil
@@ -65,6 +66,7 @@ func GetRandomCard(db *sql.DB) (models.Cards, error) {
 		return card, fmt.Errorf("GetCardByoracleId: %s: %v", card.OracleId, err)
 	}
 	GetSecondaryCardInfo(&card, db)
+	card.Prints, err = GetPrintsByNameAndOracleId(db, card.CardName, card.OracleId)
 
 	return card, nil
 
@@ -200,7 +202,7 @@ func SaveCard(card models.Cards, db *sql.DB) error {
 	*/
 	return nil
 }
-func GetSecondaryCardInfo (card *models.Cards, db *sql.DB) {
+func GetSecondaryCardInfo(card *models.Cards, db *sql.DB) {
 	rows, err := db.Query(COLORS_BY_CARD_SQL, card.OracleId, card.CardName)
 	card.Colors, err = GetListFromRows[string](rows, err)
 
@@ -216,3 +218,4 @@ func GetSecondaryCardInfo (card *models.Cards, db *sql.DB) {
 	rows, err = db.Query(KEYWORDS_BY_CARD_SQL, card.OracleId, card.CardName)
 	card.Keywords, err = GetListFromRows[string](rows, err)
 }
+
