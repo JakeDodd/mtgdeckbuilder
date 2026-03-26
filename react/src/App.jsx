@@ -4,6 +4,7 @@ import Button from "./components/Button.jsx";
 import CardDetail from "./components/CardDetail.jsx";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import RandomCardPage from "./components/RandomCardPage.jsx";
+import CardSearchPage from "./components/CardSearchPage.jsx";
 
 function App() {
   const [card, setCard] = useState({});
