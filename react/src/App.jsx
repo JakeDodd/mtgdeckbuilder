@@ -26,6 +26,7 @@ function App() {
         <div className="container">
           <Routes>
             <Route path="/random" element={<RandomCardPage />} />
+            <Route path="/search" element={<CardSearchPage />} />
           </Routes>
         </div>
       </div>
