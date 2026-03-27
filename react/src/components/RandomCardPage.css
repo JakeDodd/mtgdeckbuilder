@@ -12,9 +12,3 @@
   border: groove 6px rgba(0, 0, 0, 0.3);
   height: 99vh;
 }
-
-@media (hover: hover) {
-  .random-button:hover {
-    transform: scale(1.2);
-  }
-}

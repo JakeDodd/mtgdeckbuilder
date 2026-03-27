@@ -3,9 +3,14 @@ import axios from "axios";
 
 function SearchBar() {
   return (
-    <div class="card-search">
-      <input type="text" placeholder="Ex. lightning bolt"></input>
-      <button type="submit">Search</button>
+    <div class="grid-container">
+      <div></div>
+      <div class="grid-item">
+        <input type="text" placeholder="Ex. lightning bolt"></input>
+      </div>
+      <div class="grid-item-button">
+        <button type="submit">Beseech</button>
+      </div>
     </div>
   );
 }

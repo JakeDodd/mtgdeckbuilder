@@ -1,10 +1,46 @@
-.card-search input[type="text"] {
+.grid-container input[type="text"] {
   font-family: "Goudy Mediaeval";
   font-size: 2.5rem;
   color: black;
   margin: 0;
 }
 
+.grid-container div {
+  padding: 5%;
+}
 ::placeholder {
   color: black;
+}
+
+input:focus::placeholder {
+  color: transparent;
+}
+
+button {
+  background-color: #69707a;
+  border: outset 6px #757e8a;
+  box-shadow: 5px 5px 20px black;
+  padding: 1rem 1rem;
+  font-size: 1.5rem;
+  font-family: "Goudy Mediaeval";
+}
+
+@media (hover: hover) {
+  button:hover {
+    transform: scale(1.2);
+  }
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.grid-item {
+  padding: 10px;
+}
+
+.grid-item-button {
+  padding: 10px;
+  float: right;
 }

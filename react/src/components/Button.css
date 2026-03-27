@@ -1,11 +1,17 @@
 .button-container {
-	padding: 2%;
+  padding: 2%;
 }
 .random-button {
-	background-color: #69707a;
-	border: outset 6px #757e8a;
-	box-shadow: 5px 5px 20px black;
-	padding: 1rem 1rem;
-	font-size: 1.5rem;
-	font-family: "Goudy Mediaeval";
+  background-color: #69707a;
+  border: outset 6px #757e8a;
+  box-shadow: 5px 5px 20px black;
+  padding: 1rem 1rem;
+  font-size: 1.5rem;
+  font-family: "Goudy Mediaeval";
+}
+
+@media (hover: hover) {
+  .random-button:hover {
+    transform: scale(1.2);
+  }
 }
