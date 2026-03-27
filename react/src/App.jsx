@@ -7,19 +7,6 @@ import RandomCardPage from "./components/RandomCardPage.jsx";
 import CardSearchPage from "./components/CardSearchPage.jsx";
 
 function App() {
-  const [card, setCard] = useState({});
-  const [imageUrl, setImageUrl] = useState("");
-  const [backImageUrl, setBackImageUrl] = useState("");
-
-  const getCard = (card) => {
-    setCard(card);
-    setImageUrl(
-      card.CardFaces?.length > 0 ? card.CardFaces[0].NormalUri : card.NormalUri,
-    );
-    setBackImageUrl(
-      "https://backs.scryfall.io/normal/2/2/222b7a3b-2321-4d4c-af19-19338b134971.jpg?1677416389",
-    );
-  };
 
   return (
     <BrowserRouter>
