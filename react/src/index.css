@@ -13,20 +13,21 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
   /* Optional: Prevents margin/padding issues from adding to the total width/height */
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 
 /* Ensure the main React app container (usually an ID or class like 'root' or 'App') also takes full height */
-#root { 
+#root {
   box-sizing: border-box;
   background-color: #f0f0f0; /* Choose a base color */
-  background-image: url('assets/card-back4.png'); /* Link to your image file */
+  background-image: url("assets/card-back4.png"); /* Link to your image file */
   background-size: cover;
   background-repeat: repeat;
 
@@ -35,8 +36,5 @@ html, body {
   /* Add your border style here */
   border: 10px solid black; /* Example: 10px solid coral border */
   border-radius: 5px;
-  padding: .5%;
+  padding: 0.5%;
 }
-
-
-

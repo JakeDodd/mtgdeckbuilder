@@ -1,0 +1,42 @@
+.image-grid-wrapper {
+  max-width: 1350px;
+  margin: 0 auto;
+  padding: 0 16px 24px 16px;
+  min-height: 98vh;
+  display: flex;
+  flex-direction: column;
+}
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+  align-content: start;
+}
+
+.image-card {
+}
+
+.image-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.results-count {
+  color: #000;
+  font-family: "Goudy Mediaeval";
+  font-size: 1.4rem;
+}
+
+.pagination {
+  color: #000;
+  font-family: "Goudy Mediaeval";
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: auto;
+  bottom: 16px;
+}
